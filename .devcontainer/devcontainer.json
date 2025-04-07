@@ -2,7 +2,7 @@
     "name": "DevFactory/Azure",
 
     // Container user to use in VSCode Online and GitHub Codespaces
-    "image": "ubuntu:22.04",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
     "remoteUser": "vscode",
 
     // Adding features to the container.
@@ -19,12 +19,12 @@
         "ghcr.io/azure/azure-dev/azd:latest": {},
         "ghcr.io/devcontainers/features/azure-cli:1": {},
         "ghcr.io/devcontainers/features/terraform:1": {
-            "terraformVersion": "1.9.8",
+            "terraformVersion": "1.11.3",
             "installTFsec": true,
             "tflint": "0.53.0"
-            
         },
         "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+        "ghcr.io/devcontainers-extra/features/packer-asdf:2": {},
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
 
