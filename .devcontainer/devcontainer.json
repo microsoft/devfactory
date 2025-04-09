@@ -35,10 +35,11 @@
     "customizations": {
         "vscode": {
             "extensions": [
-				"hashicorp.terraform",
-				"mutantdino.resourcemonitor",
-				"GitHub.copilot"
-			]
+                "hashicorp.terraform",
+                "mutantdino.resourcemonitor",
+                "GitHub.copilot",
+                "GitHub.copilot-chat"
+            ]
         }
     }
 
