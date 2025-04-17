@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Terraform: Plan Dev Center Example",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv) && terraform plan -var-file=${input:devCenterExample}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Terraform: Apply Dev Center Example",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv) && terraform apply -auto-approve -var-file=${input:devCenterExample}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Terraform: Destroy Dev Center Example",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv) && terraform destroy -auto-approve -var-file=${input:devCenterExample}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "devCenterExample",
+            "type": "pickString",
+            "description": "Select the Dev Center example configuration to use",
+            "options": [
+                "examples/dev_center/simple_case/configuration.tfvars",
+                "examples/dev_center/system_assigned_identity/configuration.tfvars",
+                "examples/dev_center/user_assigned_identity/configuration.tfvars",
+                "examples/dev_center/dual_identity/configuration.tfvars"
+            ],
+            "default": "examples/dev_center/simple_case/configuration.tfvars"
+        }
+    ]
+}

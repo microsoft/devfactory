@@ -26,28 +26,70 @@ First, log in to Azure:
 az login
 ```
 
-Then set your subscription ID. You can either:
+Then set up your subscription ID. Here are the steps:
+
+1. List all available subscriptions:
+```bash
+az account list --query "[].{name:name, subscriptionId:id, state:state, isDefault:isDefault}" -o table
+```
+
+2. If you have multiple subscriptions, select the one you want to use:
+```bash
+az account set --subscription "subscription-name-or-id"
+```
+
+3. Export the subscription ID as an environment variable. You can either:
 
 a. Export it directly if you know your subscription ID:
 ```bash
 export ARM_SUBSCRIPTION_ID="your-subscription-id"
 ```
 
-b. Or get it from your Azure CLI current account and export it in one command:
+b. Or get it from your current Azure CLI account and export it in one command:
 ```bash
 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 ```
 
-You can verify the exported subscription ID with:
+4. Verify the exported subscription:
 ```bash
+# Check the environment variable
 echo $ARM_SUBSCRIPTION_ID
+
+# Verify it matches your current Azure CLI subscription
+az account show --query "[name,id]" -o tsv
 ```
 
-Note: We use environment variables for the subscription ID instead of including it in configuration files. If you have multiple subscriptions, you can list them with `az account list --query "[].{name:name, subscriptionId:id}" -o table` and then select the right one using `az account set --subscription "subscription-id"` before exporting the ARM_SUBSCRIPTION_ID.
+Note: We use environment variables for the subscription ID instead of including it in configuration files. This approach is more secure and follows infrastructure-as-code best practices. The VS Code tasks in this project will automatically handle exporting the subscription ID for you.
 
-### 3. Choose an Example Configuration
+### 3. Choose How to Run Terraform Commands
 
-The examples directory contains ready-to-use configurations for different scenarios. For instance, to start with a simple resource group configuration:
+You have two options for running Terraform commands:
+
+#### Option 1: Using VS Code Tasks (Recommended)
+
+The project includes predefined VS Code tasks for easy execution:
+
+1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+2. Type "Tasks: Run Task"
+3. Select one of the following tasks:
+   - `Terraform: Plan Dev Center Example` - Preview changes
+   - `Terraform: Apply Dev Center Example` - Apply changes
+   - `Terraform: Destroy Dev Center Example` - Remove resources
+
+When you run any task, you'll be prompted to select which example configuration to use:
+- Simple case
+- System assigned identity
+- User assigned identity
+- Dual identity
+
+The tasks automatically:
+- Get your Azure subscription ID from Azure CLI
+- Set it as an environment variable
+- Run the selected Terraform command with your chosen configuration
+
+#### Option 2: Using Command Line
+
+If you prefer using the command line directly:
 
 ```bash
 # You don't need to copy the file - reference it directly from the examples directory
@@ -70,8 +112,15 @@ terraform apply -var-file=examples/resource_group/simple_case/configuration.tfva
 
 ### 5. Clean Up Resources
 
-When you're done, you can remove all created resources:
+When you're done, you can remove all created resources using either VS Code tasks or the command line:
 
+Using VS Code tasks:
+1. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+2. Type "Tasks: Run Task"
+3. Select "Terraform: Destroy Dev Center Example"
+4. Choose the configuration to destroy
+
+Using command line:
 ```bash
 terraform destroy -var-file=examples/resource_group/simple_case/configuration.tfvars
 ```
