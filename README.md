@@ -1,26 +1,39 @@
-# Development Factory
+# DevFactory
 
-Welcome to the Dev Factory project!
+Welcome to the DevFactory project!
 
 ## Introduction
 
-The Development Factory project is designed to streamline the setup and configuration of a modern development environment built on GitHub Enterprise.
-This project leverages multiple techniques orchestrated with Terraform to automate the provisioning of various components.
+DevFactory is a Terraform-based project designed to streamline the setup and configuration of modern development environments on Azure. It uses a modular approach with consistent patterns to deploy and manage Azure resources, with a focus on Azure Dev Center and DevBox capabilities.
 
 The initial north star for this project is to build a development factory represented in the following architecture diagram:
 
 ![DevFactory](docs/images/devfactoryv1.png)
 
-The initial variations are:
+## Key Features
 
-1. Private environment.
-2. Private environment hardened with private endpoints.
+- **Modular Design**: Each Azure resource type has its own module with consistent structure
+- **Flexible Configuration**: Use variable files to create different resource combinations
+- **Naming Standards**: Integrated Azure CAF naming conventions
+- **Resource Association**: Seamless connection between related resources
+- **Complete Examples**: Ready-to-use examples for various deployment scenarios
 
 ## Components
 
-The dev factory automates the setup the following components:
+DevFactory currently automates the setup of the following components:
 
-### Control plane
+### Azure Dev Center Components
+
+- Resource Groups
+- Dev Centers
+- DevBox Definitions
+- Projects
+- Environment Types
+- Network Connections
+- Galleries
+- Catalogs
+
+### Roadmap Components
 
 - GitHub Enterprise Automation (organizations parameters, actions settings, etc.)
 - GitHub Hosted Compute Networking
@@ -36,16 +49,52 @@ The dev factory automates the setup the following components:
 - Azure Kubernetes Services
 - Azure Cognitive Services
 
-## Getting Started
+## Quick Start
 
-To get started with the DevFactory project, follow these steps:
+To get started with the DevFactory project:
 
 1. Clone this repository to your local machine, or Click on "Open in Codespace"
-2. Login to your Azure Subscription using ```az login```
-3. Login to your GitHub Enterprise environment
-4. Customize the variables in ```example.tfvars```
-5. Run ```terraform plan``` to preview the changes that will be applied.
+2. Login to your Azure Subscription using `az login`
+3. Select an example configuration from the `examples` directory
+4. Customize the variables in the selected `.tfvars` file
+5. Initialize Terraform: `terraform init`
+6. Plan your deployment: `terraform plan -var-file=your-config.tfvars`
+7. Apply the configuration: `terraform apply -var-file=your-config.tfvars`
 
+For detailed instructions, see our [Getting Started Guide](docs/getting_started.md).
+
+## Documentation
+
+The project includes comprehensive documentation to help you understand and use DevFactory effectively:
+
+- [Getting Started Guide](docs/getting_started.md) - Instructions for setting up and deploying your first resources
+- [Coding Conventions](docs/conventions.md) - Standards and best practices for the codebase
+- [Module Guide](docs/module_guide.md) - Detailed information about each module's functionality and usage
+
+## Requirements
+
+- Terraform ≥ 1.9.0
+- AzureRM Provider ~> 4.26.0
+- AzureCAF Provider ~> 1.2.0
+- Azure CLI (latest version recommended)
+- An active Azure subscription
+
+## How to Use
+
+DevFactory is designed with a modular approach. The root module (main.tf) is the entry point that orchestrates the creation of all resources, and you provide different variable files to control what gets deployed:
+
+```bash
+# Initialize Terraform
+terraform init
+
+# Deploy a simple resource group configuration
+terraform apply -var-file=examples/resource_group/simple_case/configuration.tfvars
+
+# Deploy a dev center with devboxes
+terraform apply -var-file=examples/dev_center/simple_case/configuration.tfvars
+```
+
+For more complex scenarios, check out the examples in the `examples` directory. Each example demonstrates a specific use case and can be used as a starting point for your own configurations.
 
 ## Contributing
 
@@ -63,8 +112,8 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.

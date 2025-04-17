@@ -13,7 +13,7 @@
             "installOhMyZsh": true,
             "installOhMyZshConfig": true,
             "installPowerlineFonts": true,
-            "installZshSyntax": true, 
+            "installZshSyntax": true,
             "username": "vscode"
         },
         "ghcr.io/azure/azure-dev/azd:latest": {},
@@ -21,7 +21,8 @@
         "ghcr.io/devcontainers/features/terraform:1": {
             "terraformVersion": "1.11.3",
             "installTFsec": true,
-            "tflint": "0.53.0"
+            "tflint": "0.53.0",
+            "installTerraformDocs": true
         },
         "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
         "ghcr.io/devcontainers-extra/features/packer-asdf:2": {},
@@ -30,7 +31,7 @@
 
     // Run additional commands after the container is created.
     "postCreateCommand" : "sudo git config --global core.editor vi && echo 'export PATH=$HOME/.tfenv/tfenv-3.0.0/bin:$PATH' >> ~/.zshrc",
- 
+
     // Adding the extensions in the container.
     "customizations": {
         "vscode": {
