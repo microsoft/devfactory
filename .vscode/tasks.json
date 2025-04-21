@@ -43,6 +43,54 @@
                 "cwd": "${workspaceFolder}"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Terraform: Validate",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv) && terraform validate"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "Terraform: Fmt",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "terraform fmt -recursive"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "TFLint",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "tflint --init && tflint"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
         }
     ],
     "inputs": [
@@ -55,7 +103,8 @@
                 "examples/dev_center/system_assigned_identity/configuration.tfvars",
                 "examples/dev_center/user_assigned_identity/configuration.tfvars",
                 "examples/dev_center/dual_identity/configuration.tfvars",
-                "examples/dev_center_project/configuration.tfvars"
+                "examples/dev_center_project/configuration.tfvars",
+                "examples/dev_center_environment_type/configuration.tfvars"
             ],
             "default": "examples/dev_center/simple_case/configuration.tfvars"
         }
