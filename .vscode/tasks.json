@@ -49,12 +49,13 @@
         {
             "id": "devCenterExample",
             "type": "pickString",
-            "description": "Select the Dev Center example configuration to use",
+            "description": "Select the example configuration to use",
             "options": [
                 "examples/dev_center/simple_case/configuration.tfvars",
                 "examples/dev_center/system_assigned_identity/configuration.tfvars",
                 "examples/dev_center/user_assigned_identity/configuration.tfvars",
-                "examples/dev_center/dual_identity/configuration.tfvars"
+                "examples/dev_center/dual_identity/configuration.tfvars",
+                "examples/dev_center_project/configuration.tfvars"
             ],
             "default": "examples/dev_center/simple_case/configuration.tfvars"
         }
