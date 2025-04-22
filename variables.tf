@@ -35,6 +35,7 @@ variable "dev_centers" {
   default = {}
 }
 
+#tflint-ignore: terraform_unused_declarations
 variable "dev_center_galleries" {
   description = "Dev Center Galleries configuration objects"
   type = map(object({
@@ -56,6 +57,7 @@ variable "dev_center_galleries" {
   default = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "dev_center_dev_box_definitions" {
   description = "Dev Center Dev Box Definitions configuration objects"
   type = map(object({
@@ -116,6 +118,7 @@ variable "dev_center_environment_types" {
   default = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "dev_center_project_environment_types" {
   description = "Dev Center Project Environment Types configuration objects"
   type = map(object({
@@ -133,6 +136,7 @@ variable "dev_center_project_environment_types" {
   default = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "dev_center_network_connections" {
   description = "Dev Center Network Connections configuration objects"
   type = map(object({
@@ -154,6 +158,7 @@ variable "dev_center_network_connections" {
   default = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "dev_center_catalogs" {
   description = "Dev Center Catalogs configuration objects"
   type = map(object({
@@ -184,6 +189,7 @@ variable "dev_center_catalogs" {
   default = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "shared_image_galleries" {
   description = "Shared Image Galleries configuration objects"
   type = map(object({

@@ -1,0 +1,35 @@
+name: Terraform Lint
+
+on:
+  pull_request:
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+      - '.github/workflows/terraform-lint.yml'
+
+permissions:
+  contents: read
+  pull-requests: write # Needed for commenting on PRs
+
+jobs:
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.46.1
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        id: tflint
+        run: |
+          tflint -f json > tflint_results.json || echo "TFLint found issues"
+          tflint -f compact
