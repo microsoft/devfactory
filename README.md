@@ -58,9 +58,8 @@ To get started with the DevFactory project:
 3. Select an example configuration from the `examples` directory
 4. Customize the variables in the selected `.tfvars` file
 5. Initialize Terraform: `terraform init`
-6. Plan your deployment: `terraform plan -var-file=your-config.tfvars`
-7. Apply the configuration: `terraform apply -var-file=your-config.tfvars`
-
+6. Plan your deployment: `terraform plan -var-file=configuration.tfvars`
+7. Apply the configuration: `terraform apply -var-file=configuration.tfvars`
 For detailed instructions, see our [Getting Started Guide](docs/getting_started.md).
 
 ## Documentation
