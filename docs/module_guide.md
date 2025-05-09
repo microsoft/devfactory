@@ -122,12 +122,12 @@ dev_center_dev_box_definitions = {
     dev_center = {
       key = "devcenter1"
     }
-    image_reference = {
-      offer     = "windows-11"
-      publisher = "microsoftwindowsdesktop"
-      sku       = "win11-22h2-ent"
-      version   = "latest"
+    resource_group = {
+      key = "rg1"
     }
+    # Currently assumes that image definition is one of that's available in the default gallery
+    # Format: /galleries/{gallery}/images/{image-definition}
+    image_reference_id = "/galleries/default/images/microsoftwindowsdesktop_windows-ent-cpc_win11-24h2-ent-cpc-m365"
     sku_name = "general_i_8c32gb256ssd_v2"
     hibernate_support = {
       enabled = true

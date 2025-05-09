@@ -9,6 +9,10 @@ resource_groups = {
   rg1 = {
     name   = "devfactory-dc"
     region = "eastus"
+    tags = {
+      environment = "development"
+      workload    = "devbox-example"
+    }
   }
 }
 
@@ -17,6 +21,9 @@ dev_centers = {
     name = "devcenter"
     resource_group = {
       key = "rg1"
+    }
+    identity = {
+      type = "SystemAssigned"
     }
     tags = {
       environment = "demo"
