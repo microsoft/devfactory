@@ -15,8 +15,8 @@ jobs:
     name: Format and Validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.11.4
       - name: Terraform Init
@@ -33,7 +33,7 @@ jobs:
       integration_tests: ${{ steps.find-integration-tests.outputs.tests }}
       example_tests: ${{ steps.find-example-tests.outputs.tests }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Find unit tests
         id: find-unit-tests
         run: |
@@ -58,8 +58,8 @@ jobs:
       matrix:
         test: ${{fromJson(needs.discover-tests.outputs.unit_tests)}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.11.4
       - name: Terraform Init
@@ -75,8 +75,8 @@ jobs:
       matrix:
         test: ${{fromJson(needs.discover-tests.outputs.integration_tests)}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.11.4
       - name: Terraform Init
@@ -92,8 +92,8 @@ jobs:
       matrix:
         test: ${{fromJson(needs.discover-tests.outputs.example_tests)}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: hashicorp/setup-terraform@v2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.11.4
       - name: Terraform Init
