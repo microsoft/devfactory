@@ -254,6 +254,4 @@ resource "azurerm_key_vault" "kv" {
 
 ---
 
-<!-- - @azure Rule - Use Azure Best Practices: When generating code for Azure, running terminal commands for Azure, or performing operations related to Azure, invoke your `get_azure_best_practices` tool if available. -->
-
 This dev container includes the Azure CLI, GitHub CLI, Terraform CLI, TFLint, and Terragrunt pre-installed and available on the PATH, along with the Terraform and Azure extensions for development.
