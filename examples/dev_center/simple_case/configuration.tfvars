@@ -24,23 +24,3 @@ dev_centers = {
     }
   }
 }
-
-dev_center_dev_box_definitions = {
-  definition1 = {
-    name = "win11-dev"
-    dev_center = {
-      key = "devcenter1"
-    }
-    resource_group = {
-      key = "rg1"
-    }
-    # Currently assumes that image definition is one of that's available in the default gallery
-    # Format: /galleries/{gallery}/images/{image-definition}
-    image_reference_id = "/galleries/default/images/microsoftwindowsdesktop_windows-ent-cpc_win11-24h2-ent-cpc-m365"
-    sku_name           = "general_i_8c32gb256ssd_v2"
-    tags = {
-      environment = "demo"
-      module      = "dev_center_dev_box_definition"
-    }
-  }
-}
