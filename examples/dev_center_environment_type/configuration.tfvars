@@ -29,7 +29,8 @@ dev_centers = {
 
 dev_center_environment_types = {
   envtype1 = {
-    name = "terraform-env"
+    name         = "terraform-env"
+    display_name = "Terraform Environment Type"
     dev_center = {
       key = "devcenter1"
     }

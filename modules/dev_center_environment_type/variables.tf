@@ -33,11 +33,17 @@ variable "tags" {
 variable "environment_type" {
   description = "Configuration object for the Dev Center Environment Type"
   type = object({
-    name = string
-    tags = optional(map(string))
+    name         = string
+    display_name = optional(string)
+    tags         = optional(map(string))
   })
   validation {
     condition     = length(var.environment_type.name) > 0
     error_message = "environment_type.name must be a non-empty string."
+  }
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-_.]{2,62}$", var.environment_type.name))
+    error_message = "environment_type.name must be 3-63 characters long, and can only contain alphanumeric characters, hyphens, underscores, or periods. The name must start with a letter or number."
   }
 }

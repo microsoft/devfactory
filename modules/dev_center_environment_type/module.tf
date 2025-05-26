@@ -5,9 +5,9 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = "~> 1.2.0"
     }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.26.0"
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.4.0"
     }
   }
 }
@@ -30,8 +30,16 @@ resource "azurecaf_name" "environment_type" {
   use_slug      = var.global_settings.use_slug
 }
 
-resource "azurerm_dev_center_environment_type" "environment_type" {
-  name          = azurecaf_name.environment_type.result
-  dev_center_id = var.dev_center_id
-  tags          = local.tags
+resource "azapi_resource" "environment_type" {
+  type                   = "Microsoft.DevCenter/devcenters/environmentTypes@2025-04-01-preview"
+  name                   = azurecaf_name.environment_type.result
+  parent_id              = var.dev_center_id
+  tags                   = local.tags
+  response_export_values = ["properties.displayName"]
+
+  body = {
+    properties = {
+      displayName = try(var.environment_type.display_name, var.environment_type.name)
+    }
+  }
 }

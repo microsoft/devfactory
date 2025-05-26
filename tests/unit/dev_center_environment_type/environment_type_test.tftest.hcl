@@ -31,7 +31,8 @@ variables {
 
   dev_center_environment_types = {
     envtype1 = {
-      name = "test-environment-type"
+      name         = "test-environment-type"
+      display_name = "Test Environment Type Display Name"
       dev_center = {
         key = "devcenter1"
       }
@@ -66,7 +67,7 @@ mock_provider "azapi" {
 
 mock_provider "azurecaf" {}
 
-run "environment_type_creation" {
+run "basic_test" {
   command = plan
 
   module {
@@ -91,5 +92,10 @@ run "environment_type_creation" {
   assert {
     condition     = contains(keys(module.dev_center_environment_types["envtype1"].tags), "module")
     error_message = "Environment type tags did not contain module tag"
+  }
+
+  assert {
+    condition     = module.dev_center_environment_types["envtype1"].display_name == "Test Environment Type Display Name"
+    error_message = "Environment type display_name did not match expected value"
   }
 }

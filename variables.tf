@@ -129,6 +129,7 @@ variable "dev_center_environment_types" {
   description = "Dev Center Environment Types configuration objects"
   type = map(object({
     name          = string
+    display_name  = optional(string)
     dev_center_id = optional(string)
     dev_center = optional(object({
       key = string
