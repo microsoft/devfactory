@@ -5,9 +5,9 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = "~> 1.2.0"
     }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.26.0"
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.4.0"
     }
   }
 }
@@ -30,19 +30,50 @@ resource "azurecaf_name" "dev_center" {
   use_slug      = var.global_settings.use_slug
 }
 
-resource "azurerm_dev_center" "dev_center" {
-  name                = azurecaf_name.dev_center.result
-  location            = var.location
-  resource_group_name = var.resource_group_name
+resource "azapi_resource" "dev_center" {
+  type      = "Microsoft.DevCenter/devcenters@2025-04-01-preview"
+  name      = azurecaf_name.dev_center.result
+  location  = var.location
+  parent_id = "/subscriptions/${data.azapi_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}"
 
-  # Optional identity block - only include if specified in config
+  # Identity configuration - only included when identity is specified
   dynamic "identity" {
-    for_each = try(var.dev_center.identity, null) != null ? [1] : []
+    for_each = try(var.dev_center.identity, null) != null ? [var.dev_center.identity] : []
     content {
-      type         = try(var.dev_center.identity.type, "SystemAssigned")
-      identity_ids = try(var.dev_center.identity.identity_ids, null)
+      type         = identity.value.type
+      identity_ids = try(identity.value.identity_ids, null)
     }
   }
 
+  body = {
+    properties = merge(
+      try(var.dev_center.display_name, null) != null ? {
+        displayName = var.dev_center.display_name
+      } : {},
+      try(var.dev_center.dev_box_provisioning_settings, null) != null ? {
+        devBoxProvisioningSettings = {
+          installAzureMonitorAgentEnableStatus = try(var.dev_center.dev_box_provisioning_settings.install_azure_monitor_agent_enable_installation, null)
+        }
+      } : {},
+      try(var.dev_center.encryption, null) != null ? {
+        encryption = var.dev_center.encryption
+      } : {},
+      try(var.dev_center.network_settings, null) != null ? {
+        networkSettings = {
+          microsoftHostedNetworkEnableStatus = try(var.dev_center.network_settings.microsoft_hosted_network_enable_status, null)
+        }
+      } : {},
+      try(var.dev_center.project_catalog_settings, null) != null ? {
+        projectCatalogSettings = {
+          catalogItemSyncEnableStatus = try(var.dev_center.project_catalog_settings.catalog_item_sync_enable_status, null)
+        }
+      } : {}
+    )
+  }
+
   tags = local.tags
+
+  response_export_values = ["properties"]
 }
+
+data "azapi_client_config" "current" {}

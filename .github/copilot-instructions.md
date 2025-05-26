@@ -224,6 +224,56 @@ resource "azurerm_key_vault" "kv" {
 
 ---
 
+## Azure API Property Naming and Data Type Conventions
+
+### DevCenter API Specifics (API Version 2025-04-01-preview)
+When working with Azure DevCenter resources, be aware of these critical naming and data type requirements:
+
+**Property Naming Convention:**
+- Azure DevCenter API requires camelCase property names in the request body
+- Terraform variables use snake_case for consistency
+- Always map snake_case variable names to camelCase API properties
+
+**Common Property Mappings:**
+```hcl
+# Variable (snake_case) → API Property (camelCase)
+install_azure_monitor_agent_enable_installation → installAzureMonitorAgentEnableStatus
+microsoft_hosted_network_enable_status → microsoftHostedNetworkEnableStatus
+catalog_item_sync_enable_status → catalogItemSyncEnableStatus
+```
+
+**Data Type Requirements:**
+- Many DevCenter "enable" properties expect string values, not booleans
+- Use `"Enabled"` or `"Disabled"` instead of `true`/`false`
+- Always verify expected data types in Azure API documentation
+
+**Example Implementation:**
+```hcl
+# Variable definition (snake_case, string type)
+variable "dev_box_provisioning_settings" {
+  type = object({
+    install_azure_monitor_agent_enable_installation = optional(string, "Enabled")
+  })
+}
+
+# API body mapping (camelCase)
+body = {
+  properties = {
+    devBoxProvisioningSettings = {
+      installAzureMonitorAgentEnableStatus = try(var.settings.dev_box_provisioning_settings.install_azure_monitor_agent_enable_installation, "Enabled")
+    }
+  }
+}
+```
+
+**Validation Approach:**
+- Always run `terraform plan` to validate API compatibility
+- Check Azure API documentation for exact property names and types
+- Use Azure MCP server tools to verify latest API schemas
+- Test with actual API calls when implementing new resource properties
+
+---
+
 ## Security Best Practices
 - Use `sensitive = true` for secret variables
 - Never hardcode credentials
