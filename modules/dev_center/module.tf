@@ -17,6 +17,9 @@ locals {
     try(var.global_settings.tags, {}),
     try(var.dev_center.tags, {})
   )
+
+  # Ensure DevCenter name is 26 characters or less
+  dev_center_name = substr(azurecaf_name.dev_center.result, 0, 26)
 }
 
 # Using resource instead of data source to ensure stable naming across plan/apply
@@ -32,7 +35,7 @@ resource "azurecaf_name" "dev_center" {
 
 resource "azapi_resource" "dev_center" {
   type      = "Microsoft.DevCenter/devcenters@2025-04-01-preview"
-  name      = azurecaf_name.dev_center.result
+  name      = local.dev_center_name
   location  = var.location
   parent_id = "/subscriptions/${data.azapi_client_config.current.subscription_id}/resourceGroups/${var.resource_group_name}"
 

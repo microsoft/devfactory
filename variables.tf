@@ -110,16 +110,58 @@ variable "dev_center_projects" {
     resource_group = optional(object({
       key = string
     }))
+    resource_group_id          = optional(string)
     region                     = optional(string)
     description                = optional(string)
+    display_name               = optional(string)
     maximum_dev_boxes_per_user = optional(number)
     dev_box_definition_names   = optional(list(string), [])
+
+    # Managed Identity configuration
     identity = optional(object({
-      type         = string
-      identity_ids = optional(list(string))
+      type         = string # "None", "SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"
+      identity_ids = optional(list(string), [])
       }), {
       type = "SystemAssigned"
     })
+
+    # Azure AI Services Settings
+    azure_ai_services_settings = optional(object({
+      azure_ai_services_mode = optional(string, "Disabled") # "AutoDeploy", "Disabled"
+    }))
+
+    # Catalog Settings
+    catalog_settings = optional(object({
+      catalog_item_sync_types = optional(list(string), []) # "EnvironmentDefinition", "ImageDefinition"
+    }))
+
+    # Customization Settings
+    customization_settings = optional(object({
+      user_customizations_enable_status = optional(string, "Disabled") # "Enabled", "Disabled"
+      identities = optional(list(object({
+        identity_resource_id = optional(string)
+        identity_type        = optional(string) # "systemAssignedIdentity", "userAssignedIdentity"
+      })), [])
+    }))
+
+    # Dev Box Auto Delete Settings
+    dev_box_auto_delete_settings = optional(object({
+      delete_mode        = optional(string, "Manual") # "Auto", "Manual"
+      grace_period       = optional(string)           # ISO8601 duration format PT[n]H[n]M[n]S
+      inactive_threshold = optional(string)           # ISO8601 duration format PT[n]H[n]M[n]S
+    }))
+
+    # Serverless GPU Sessions Settings
+    serverless_gpu_sessions_settings = optional(object({
+      max_concurrent_sessions_per_project = optional(number)
+      serverless_gpu_sessions_mode        = optional(string, "Disabled") # "AutoDeploy", "Disabled"
+    }))
+
+    # Workspace Storage Settings
+    workspace_storage_settings = optional(object({
+      workspace_storage_mode = optional(string, "Disabled") # "AutoDeploy", "Disabled"
+    }))
+
     tags = optional(map(string), {})
   }))
   default = {}
