@@ -91,6 +91,22 @@
             "group": {
                 "kind": "build"
             }
+        },
+        {
+            "label": "Terraform: Run All Tests",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [
+                "-c",
+                "./tests/run_tests.sh"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "test"
+            }
         }
     ],
     "inputs": [

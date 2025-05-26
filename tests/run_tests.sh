@@ -1,86 +1,94 @@
 #!/bin/bash
 set -e
 
-# Move to the repository root
-cd "$(dirname "$0")/.."
+# Colors for better output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+BOLD='\033[1m'
 
-# Create temporary files to store results
-results_file=$(mktemp)
-echo -n > "$results_file"  # Clear the file
-
-# Function to run tests and store results
-run_test() {
-    local test_file="$1"
-    local test_type="$2"
-    # Prettify test name: remove _test, replace _ and - with space, remove U, title case
-    local test_name=$(basename "$test_file" .tftest.hcl | \
-        sed 's/_test$//' | \
-        sed 's/[_-]/ /g' | \
-        sed 's/U//g' | \
-        awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) tolower(substr($i,2)) }}1')
-    echo "Running $test_name Test:"
-    # Run test and capture exit code
-    if terraform test -verbose "$test_file"; then
-        printf "%s|%s|%s\n" "$test_name" "$test_type" "✅ PASS" >> "$results_file"
-    else
-        printf "%s|%s|%s\n" "$test_name" "$test_type" "❌ FAIL" >> "$results_file"
-    fi
-    echo ""
-}
-
-# Function to print test summary
-print_summary() {
-    local total=0
-    local passed=0
-    local failed=0
-    # Prepare a temp file for column output
-    tmp_table=$(mktemp)
-    echo "Test Name|Type|Status" > "$tmp_table"
-    while IFS='|' read -r name type status; do
-        if [[ -n "$name" ]]; then
-            ((total++))
-            if [[ "$status" == "✅ PASS" ]]; then
-                ((passed++))
-            else
-                ((failed++))
-            fi
-            echo "$name|$type|$status" >> "$tmp_table"
-        fi
-    done < "$results_file"
-    echo
-    echo "==================== Test Summary ===================="
-    column -t -s '|' "$tmp_table"
-    echo "-----------------------------------------------------"
-    printf "Total: %d   Passed: %d   Failed: %d\n" "$total" "$passed" "$failed"
-    echo "====================================================="
-    rm -f "$results_file" "$tmp_table"
-    return $((failed > 0))
-}
-
-echo "Running all tests in the repository..."
+echo -e "${BOLD}DevFactory Test Runner${NC}"
+echo -e "===================\n"
 
 # Function to run tests in a directory
-run_tests_in_dir() {
-    local dir="$1"
-    local type="$2"
-    if [ -d "$dir" ]; then
-        echo "Running $type tests..."
-        find "$dir" -name "*_test.tftest.hcl" -type f | sort | while read -r test_file; do
-            run_test "$test_file" "$type"
-        done
-    fi
+run_test() {
+  local test_dir=$1
+  local test_name=$2
+
+  echo -e "${YELLOW}Running ${test_name} tests...${NC}"
+
+  # Initialize the test directory if needed
+  if [ ! -d "${test_dir}/.terraform" ]; then
+    echo -e "  Initializing ${test_dir}..."
+    terraform -chdir="${test_dir}" init -input=false > /dev/null
+  fi
+
+  # Run the test
+  echo -e "  Executing tests in ${test_dir}..."
+  if terraform -chdir="${test_dir}" test; then
+    echo -e "  ${GREEN}✓ ${test_name} tests passed${NC}"
+    return 0
+  else
+    echo -e "  ${RED}✗ ${test_name} tests failed${NC}"
+    return 1
+  fi
 }
 
-# Run root test first
-if [ -f "test.tftest.hcl" ]; then
-    echo "Running root test..."
-    run_test "test.tftest.hcl" "Root"
+# Get the script's directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the root directory (one level up from scripts)
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Change to the root directory
+cd "$ROOT_DIR"
+
+echo -e "${BOLD}Running Unit Tests${NC}"
+echo -e "----------------\n"
+
+# Create an array to store failed tests
+failed_tests=()
+
+# Run all unit tests
+unit_test_dirs=("tests/unit/resource_group" "tests/unit/dev_center" "tests/unit/dev_center_environment_type" "tests/unit/dev_center_project")
+
+for dir in "${unit_test_dirs[@]}"; do
+  test_name=$(basename "$dir")
+  if ! run_test "$dir" "$test_name"; then
+    failed_tests+=("$test_name")
+  fi
+  echo ""
+done
+
+echo -e "${BOLD}Running Integration Tests${NC}"
+echo -e "---------------------\n"
+
+# Run integration tests
+integration_test_dirs=("tests/integration")
+
+for dir in "${integration_test_dirs[@]}"; do
+  test_name=$(basename "$dir")
+  if ! run_test "$dir" "integration"; then
+    failed_tests+=("integration")
+  fi
+  echo ""
+done
+
+# Print summary
+echo -e "${BOLD}Test Summary${NC}"
+echo -e "------------"
+
+total_tests=$((${#unit_test_dirs[@]} + ${#integration_test_dirs[@]}))
+passed_tests=$((total_tests - ${#failed_tests[@]}))
+
+echo -e "Total tests: ${total_tests}"
+echo -e "${GREEN}Passed: ${passed_tests}${NC}"
+
+if [ ${#failed_tests[@]} -gt 0 ]; then
+  echo -e "${RED}Failed: ${#failed_tests[@]}${NC}"
+  echo -e "${RED}Failed tests: ${failed_tests[*]}${NC}"
+  exit 1
+else
+  echo -e "${GREEN}All tests passed!${NC}"
+  exit 0
 fi
-
-# Run different types of tests
-run_tests_in_dir "tests/unit" "Unit"
-run_tests_in_dir "tests/integration" "Integration"
-run_tests_in_dir "tests/examples" "Example"
-
-# Print test summary (code coverage style)
-print_summary

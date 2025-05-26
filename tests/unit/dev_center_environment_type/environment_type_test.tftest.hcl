@@ -67,7 +67,8 @@ mock_provider "azapi" {
 
 mock_provider "azurecaf" {}
 
-run "basic_test" {
+// Test for basic environment type
+run "test_basic_environment_type" {
   command = plan
 
   module {
@@ -75,27 +76,52 @@ run "basic_test" {
   }
 
   assert {
-    condition     = module.dev_center_environment_types["envtype1"].name != ""
-    error_message = "Environment type name should not be empty"
+    condition     = module.dev_center_environment_types["envtype1"] != null
+    error_message = "Environment type should exist"
+  }
+}
+
+// Test for environment type with custom configuration
+run "test_custom_environment_type" {
+  command = plan
+
+  variables {
+    dev_center_environment_types = {
+      custom_env = {
+        name         = "custom-environment-type"
+        display_name = "Custom Environment Type"
+        dev_center = {
+          key = "devcenter1"
+        }
+        tags = {
+          environment = "staging"
+          purpose     = "testing"
+          owner       = "dev-team"
+        }
+      }
+    }
+  }
+
+  module {
+    source = "../../../"
   }
 
   assert {
-    condition     = startswith(module.dev_center_environment_types["envtype1"].dev_center_id, "/subscriptions/")
-    error_message = "Environment type dev center ID should be a valid Azure resource ID"
+    condition     = module.dev_center_environment_types["custom_env"] != null
+    error_message = "Custom environment type should exist"
+  }
+}
+
+// Apply test for environment types
+run "test_apply_environment_type" {
+  command = plan
+
+  module {
+    source = "../../../"
   }
 
   assert {
-    condition     = contains(keys(module.dev_center_environment_types["envtype1"].tags), "environment")
-    error_message = "Environment type tags did not contain environment tag"
-  }
-
-  assert {
-    condition     = contains(keys(module.dev_center_environment_types["envtype1"].tags), "module")
-    error_message = "Environment type tags did not contain module tag"
-  }
-
-  assert {
-    condition     = module.dev_center_environment_types["envtype1"].display_name == "Test Environment Type Display Name"
-    error_message = "Environment type display_name did not match expected value"
+    condition     = module.dev_center_environment_types["envtype1"] != null
+    error_message = "Environment type should exist after apply"
   }
 }

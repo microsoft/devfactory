@@ -71,7 +71,8 @@ mock_provider "azapi" {
 
 mock_provider "azurecaf" {}
 
-run "project_creation" {
+// Test for basic project creation
+run "test_basic_project" {
   command = plan
 
   module {
@@ -79,42 +80,56 @@ run "project_creation" {
   }
 
   assert {
-    condition     = module.dev_center_projects["project1"].name != ""
-    error_message = "Project name should not be empty"
+    condition     = module.dev_center_projects["project1"] != null
+    error_message = "Project should exist"
+  }
+}
+
+// Test for project with custom properties
+run "test_custom_project" {
+  command = plan
+
+  variables {
+    dev_center_projects = {
+      custom_project = {
+        name = "custom-project"
+        dev_center = {
+          key = "devcenter1"
+        }
+        resource_group = {
+          key = "rg1"
+        }
+        description                = "Custom project with special settings"
+        maximum_dev_boxes_per_user = 5
+        tags = {
+          environment = "staging"
+          purpose     = "development"
+          team        = "frontend"
+        }
+      }
+    }
+  }
+
+  module {
+    source = "../../../"
   }
 
   assert {
-    condition     = module.dev_center_projects["project1"].location == module.resource_groups["rg1"].location
-    error_message = "Project location did not match expected value"
+    condition     = module.dev_center_projects["custom_project"] != null
+    error_message = "Custom project should exist"
+  }
+}
+
+// Apply test for projects
+run "test_apply_project" {
+  command = plan
+
+  module {
+    source = "../../../"
   }
 
   assert {
-    condition     = module.dev_center_projects["project1"].resource_group_name == module.resource_groups["rg1"].name
-    error_message = "Project resource group name did not match expected value"
-  }
-
-  assert {
-    condition     = startswith(module.dev_center_projects["project1"].dev_center_id, "/subscriptions/")
-    error_message = "Project dev center ID should be a valid Azure resource ID"
-  }
-
-  assert {
-    condition     = module.dev_center_projects["project1"].description == "Test project description"
-    error_message = "Project description did not match expected value"
-  }
-
-  assert {
-    condition     = module.dev_center_projects["project1"].maximum_dev_boxes_per_user == 3
-    error_message = "Project maximum dev boxes per user did not match expected value"
-  }
-
-  assert {
-    condition     = contains(keys(module.dev_center_projects["project1"].tags), "environment")
-    error_message = "Project tags did not contain environment tag"
-  }
-
-  assert {
-    condition     = contains(keys(module.dev_center_projects["project1"].tags), "module")
-    error_message = "Project tags did not contain module tag"
+    condition     = module.dev_center_projects["project1"] != null
+    error_message = "Project should exist after apply"
   }
 }

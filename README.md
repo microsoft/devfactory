@@ -95,6 +95,33 @@ terraform apply -var-file=examples/dev_center/simple_case/configuration.tfvars
 
 For more complex scenarios, check out the examples in the `examples` directory. Each example demonstrates a specific use case and can be used as a starting point for your own configurations.
 
+## Testing
+
+DevFactory includes a comprehensive test suite to validate all modules:
+
+- **Unit Tests**: Test individual modules in isolation
+- **Integration Tests**: Test the interaction between multiple modules
+
+### Running Tests
+
+You can run tests using the provided scripts:
+
+```bash
+# Run all tests
+./tests/run_tests.sh
+
+# Run a specific test
+./tests/run_test.sh resource_group
+
+# Run a specific test with verbose output
+./tests/run_test.sh --verbose dev_center
+
+# Run a specific test run block
+./tests/run_test.sh --run test_basic_project project
+```
+
+For more details on testing, see the [Testing Guide](docs/testing.md).
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

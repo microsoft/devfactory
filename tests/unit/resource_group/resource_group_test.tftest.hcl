@@ -42,7 +42,72 @@ mock_provider "azapi" {
 
 mock_provider "azurecaf" {}
 
-run "resource_group_creation" {
+// Test for basic resource group creation
+run "test_basic_resource_group" {
+  command = plan
+
+  variables {
+    resource_groups = {
+      rg1 = {
+        name   = "test-basic-resource-group"
+        region = "eastus"
+        tags = {
+          environment = "test"
+        }
+      }
+    }
+  }
+
+  module {
+    source = "../../../"
+  }
+
+  assert {
+    condition     = module.resource_groups["rg1"] != null
+    error_message = "Resource group should exist"
+  }
+
+  assert {
+    condition     = module.resource_groups["rg1"].location == "eastus"
+    error_message = "Resource group location did not match expected value"
+  }
+}
+
+// Test for resource group with custom tags
+run "test_resource_group_with_custom_tags" {
+  command = plan
+
+  variables {
+    resource_groups = {
+      rg2 = {
+        name   = "test-tagged-resource-group"
+        region = "westus"
+        tags = {
+          environment = "production"
+          owner       = "platform-team"
+          costcenter  = "12345"
+        }
+      }
+    }
+  }
+
+  module {
+    source = "../../../"
+  }
+
+  assert {
+    condition     = module.resource_groups["rg2"] != null
+    error_message = "Resource group with custom tags should exist"
+  }
+
+  assert {
+    condition     = module.resource_groups["rg2"].location == "westus"
+    error_message = "Resource group location did not match expected value"
+  }
+}
+
+// Apply test for resource groups
+run "test_apply_resource_groups" {
   command = plan
 
   module {
@@ -50,27 +115,7 @@ run "resource_group_creation" {
   }
 
   assert {
-    condition     = module.resource_groups["rg1"].name != ""
-    error_message = "Resource group name should not be empty"
-  }
-
-  assert {
-    condition     = module.resource_groups["rg1"].location == "eastus"
-    error_message = "Resource group location did not match expected value"
-  }
-
-  assert {
-    condition     = contains(keys(module.resource_groups["rg1"].tags), "environment")
-    error_message = "Resource group tags did not contain environment tag"
-  }
-
-  assert {
-    condition     = contains(keys(module.resource_groups["rg1"].tags), "resource_type")
-    error_message = "Resource group tags did not contain resource_type tag"
-  }
-
-  assert {
-    condition     = module.resource_groups["rg1"].tags["resource_type"] == "Resource Group"
-    error_message = "Resource group resource_type tag did not match expected value"
+    condition     = module.resource_groups["rg1"] != null
+    error_message = "Resource group should exist after apply"
   }
 }

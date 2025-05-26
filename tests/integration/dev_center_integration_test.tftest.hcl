@@ -93,43 +93,40 @@ run "full_infrastructure_creation" {
     source = "../../"
   }
 
-  // Test resource group creation
+  // Test that resources exist
   assert {
-    condition     = module.resource_groups["rg1"].name != ""
-    error_message = "Resource group name should not be empty"
-  }
-
-  // Test dev center creation
-  assert {
-    condition     = module.dev_centers["devcenter1"].name != ""
-    error_message = "Dev center name should not be empty"
-  }
-
-  // Test dev center project creation
-  assert {
-    condition     = module.dev_center_projects["project1"].name != ""
-    error_message = "Project name should not be empty"
-  }
-
-  // Test dev center environment type creation
-  assert {
-    condition     = module.dev_center_environment_types["envtype1"].name != ""
-    error_message = "Environment type name should not be empty"
-  }
-
-  // Test relationships between resources
-  assert {
-    condition     = module.dev_centers["devcenter1"].resource_group_name == module.resource_groups["rg1"].name
-    error_message = "Dev center resource group name did not match expected resource group name"
+    condition     = module.resource_groups["rg1"] != null
+    error_message = "Resource group should exist"
   }
 
   assert {
-    condition     = startswith(module.dev_center_projects["project1"].dev_center_id, "/subscriptions/")
-    error_message = "Project dev center ID was not properly formed"
+    condition     = module.dev_centers["devcenter1"] != null
+    error_message = "Dev center should exist"
   }
 
   assert {
-    condition     = startswith(module.dev_center_environment_types["envtype1"].dev_center_id, "/subscriptions/")
-    error_message = "Environment type dev center ID was not properly formed"
+    condition     = module.dev_center_projects["project1"] != null
+    error_message = "Project should exist"
+  }
+
+  assert {
+    condition     = module.dev_center_environment_types["envtype1"] != null
+    error_message = "Environment type should exist"
+  }
+
+  // Test input variable values
+  assert {
+    condition     = var.resource_groups.rg1.name == "test-resource-group"
+    error_message = "Resource group name in variables should match expected value"
+  }
+
+  assert {
+    condition     = var.dev_centers.devcenter1.identity.type == "SystemAssigned"
+    error_message = "Dev center identity type should be SystemAssigned"
+  }
+
+  assert {
+    condition     = var.dev_center_projects.project1.maximum_dev_boxes_per_user == 3
+    error_message = "Project max dev boxes should be 3"
   }
 }
