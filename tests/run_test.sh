@@ -8,6 +8,8 @@ YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
+# This script runs specific Terraform tests for the DevFactory project
+
 # Function to display usage information
 show_usage() {
   echo -e "${BOLD}Usage:${NC}"
