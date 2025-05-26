@@ -2,7 +2,7 @@
 
 ## Quick Reference Summary
 
-- **Provider:** AzureRM v4.26 only
+- **Provider:** AzAPI v2.4.0 only
 - **Run Location:** Always from project root
 - **Sensitive Data:** Never hardcode credentials or subscription IDs
 - **Module Verification:** Always check resource arguments against latest provider docs
@@ -13,7 +13,7 @@
 ---
 
 ## DO
-- Use only AzureRM provider version 4.26
+- Use only AzAPI provider version 2.4.0
 - Place all resource modules in `/modules/` and examples in `/examples/`
 - Use dynamic blocks for optional/flexible config
 - Use nested maps and strongly-typed objects for variables
@@ -24,14 +24,15 @@
 - Add input validation in `variables.tf`
 - Add a working example for every resource/module
 - Update module README.md with usage and examples
-- Reference provider docs for every resource: https://registry.terraform.io/providers/hashicorp/azurerm/4.26.0/docs/resources/<resource>
+- Reference provider docs for every resource: https://registry.terraform.io/providers/Azure/azapi/2.4.0/docs/resources/<resource>
+- Use the Azure MCP server to find the latest API version, detailed schema, and attributes for each resource implemented.
 
 ## DO NOT
 - Do not embed subscription IDs or credentials in code/config
 - Do not use untyped or weakly-typed variables
 - Do not skip example creation for new/changed resources
 - Do not commit without running `terraform fmt` and `terraform validate`
-- Do not use provider versions other than 4.26
+- Do not use provider versions other than 2.4.0
 
 ---
 
@@ -62,9 +63,9 @@
 
 **Resource Creation:**
 ```hcl
-resource "azurecaf_name" "name" {
+resource "azurecaf_name" "this" {
   name          = var.name
-  resource_type = "azurerm_resource_type"
+  resource_type = "general"
   prefixes      = var.global_settings.prefixes
   random_length = var.global_settings.random_length
   clean_input   = true
@@ -72,11 +73,13 @@ resource "azurecaf_name" "name" {
   use_slug      = var.global_settings.use_slug
 }
 
-resource "azurerm_resource" "resource" {
-  name                = azurecaf_name.name.result
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = local.tags
+resource "azapi_resource" "this" {
+  name        = azurecaf_name.this.result
+  location    = var.location
+  parent_id   = var.parent_id
+  type        = var.resource_type
+  api_version = var.api_version
+  tags        = local.tags
   # Resource-specific properties
 }
 ```
@@ -236,13 +239,13 @@ resource "azurerm_key_vault" "kv" {
 - See `/examples/` for implementation
 - See `docs/conventions.md` for standards
 - See `docs/module_guide.md` for module development
-- Always verify resource arguments at: https://registry.terraform.io/providers/hashicorp/azurerm/4.26.0/docs/resources/<resource>
+- Always verify resource arguments at: https://registry.terraform.io/providers/Azure/azapi/2.4.0/docs/resources/<resource>
 
 ---
 
 ## AI Assistant Prompt Guidance
 - When asked to generate Terraform code, always:
-  - Use AzureRM provider v4.26
+  - Use AzAPI provider v2.4.0
   - Use strong typing and validation for variables
   - Add an example in `/examples/`
   - Reference provider documentation for all arguments
