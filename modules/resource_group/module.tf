@@ -5,12 +5,14 @@ terraform {
       source  = "aztfmod/azurecaf"
       version = "~> 1.2.0"
     }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.26.0"
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.4.0"
     }
   }
 }
+
+data "azapi_client_config" "current" {}
 
 locals {
   tags = merge(
@@ -32,8 +34,16 @@ resource "azurecaf_name" "resource_group" {
   use_slug      = var.global_settings.use_slug
 }
 
-resource "azurerm_resource_group" "resource_group" {
-  name     = azurecaf_name.resource_group.result
-  location = var.resource_group.region
-  tags     = local.tags
+resource "azapi_resource" "resource_group" {
+  name      = azurecaf_name.resource_group.result
+  location  = var.resource_group.region
+  parent_id = "/subscriptions/${data.azapi_client_config.current.subscription_id}"
+  type      = "Microsoft.Resources/resourceGroups@2023-07-01"
+  tags      = local.tags
+
+  body = {
+    properties = {}
+  }
+
+  response_export_values = ["*"]
 }

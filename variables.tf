@@ -22,13 +22,33 @@ variable "resource_groups" {
 variable "dev_centers" {
   description = "Dev Centers configuration objects"
   type = map(object({
-    name = string
+    name         = string
+    display_name = optional(string)
     resource_group = object({
       key = string
     })
     identity = optional(object({
       type         = string
       identity_ids = optional(list(string))
+    }))
+    dev_box_provisioning_settings = optional(object({
+      install_azure_monitor_agent_enable_installation = optional(string)
+    }))
+    encryption = optional(object({
+      customer_managed_key_encryption = optional(object({
+        key_encryption_key_identity = optional(object({
+          identity_type                      = optional(string)
+          delegated_identity_client_id       = optional(string)
+          user_assigned_identity_resource_id = optional(string)
+        }))
+        key_encryption_key_url = optional(string)
+      }))
+    }))
+    network_settings = optional(object({
+      microsoft_hosted_network_enable_status = optional(string)
+    }))
+    project_catalog_settings = optional(object({
+      catalog_item_sync_enable_status = optional(string)
     }))
     tags = optional(map(string), {})
   }))
