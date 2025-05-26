@@ -8,8 +8,6 @@ on:
       - "tests/run_test.sh"
       - "tests/run_tests.sh"
       - ".github/workflows/terraform-tests.yml"
-  push:
-    branches: [ main, develop ]
   workflow_dispatch:
 
 permissions:
