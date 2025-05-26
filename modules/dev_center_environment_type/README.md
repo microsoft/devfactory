@@ -1,8 +1,43 @@
 # Azure DevCenter Environment Type Module
 
-This module manages Azure DevCenter Environment Types using the AzAPI provider.
+This module manages Azure DevCenter Environment Types using the AzAPI provider with direct Azure REST API access for the latest features.
 
-## Usage
+## Overview
+
+The Environment Type module enables the creation and management of environment types within Azure DevCenter. It uses the AzAPI provider to ensure compatibility with the latest Azure features and APIs, following DevFactory standardization patterns.
+
+## Features
+
+- Uses AzAPI provider v2.4.0 for latest Azure features
+- Implements latest Azure DevCenter API (2025-04-01-preview)
+- Supports flexible environment type configurations
+- Integrates with azurecaf naming conventions
+- Manages resource tags (global + specific)
+- Provides strong input validation
+
+## Simple Usage
+
+```hcl
+module "dev_center_environment_type" {
+  source = "./modules/dev_center_environment_type"
+
+  global_settings = {
+    prefixes      = ["dev"]
+    random_length = 3
+    passthrough   = false
+    use_slug      = true
+  }
+
+  dev_center_id = "/subscriptions/.../devcenters/mydevcenter"
+
+  environment_type = {
+    name         = "dev-env"
+    display_name = "Development Environment"
+  }
+}
+```
+
+## Advanced Usage
 
 ```hcl
 module "dev_center_environment_types" {
@@ -15,7 +50,24 @@ module "dev_center_environment_types" {
   environment_type = each.value
   tags             = try(each.value.tags, {})
 }
+
+# Configuration example
+dev_center_environment_types = {
+  envtype1 = {
+    name         = "terraform-env"
+    display_name = "Terraform Environment Type"
+    dev_center = {
+      key = "devcenter1"
+    }
+    tags = {
+      environment = "demo"
+      module      = "dev_center_environment_type"
+    }
+  }
+}
 ```
+
+For more examples, see the [environment type examples](../../../examples/dev_center_environment_type/).
 
 ## Resources
 
@@ -47,20 +99,5 @@ module "dev_center_environment_types" {
 | dev_center_id | The ID of the Dev Center |
 | display_name | The display name of the Dev Center Environment Type |
 
-## Example
-
-```hcl
-dev_center_environment_types = {
-  envtype1 = {
-    name         = "terraform-env"
-    display_name = "Terraform Environment Type" # Optional, defaults to name if not provided
-    dev_center = {
-      key = "devcenter1"
-    }
-    tags = {
-      environment = "demo"
-      module      = "dev_center_environment_type"
-    }
-  }
-}
-```
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->

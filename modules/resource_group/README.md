@@ -1,91 +1,81 @@
-# Azure Resource Group Module (AzAPI)
+# Azure Resource Group Module
 
-This module creates Azure Resource Groups using the AzAPI provider.
+This module creates Azure Resource Groups using the AzAPI provider with direct Azure REST API access.
 
 ## Overview
 
-This module implements Azure Resource Groups using the AzAPI provider instead of the traditional AzureRM provider. This approach provides access to the latest Azure REST APIs and ensures compatibility with the most recent Azure features.
+The Resource Group module provides a standardized way to create and manage Azure Resource Groups. It leverages the AzAPI provider to ensure access to the latest Azure features and follows DevFactory's standardization patterns for infrastructure as code.
 
 ## Features
 
-- Creates Azure Resource Groups using AzAPI provider v2.4.0
-- Supports Azure naming conventions via azurecaf
-- Configurable tags support (resource-specific + global)
-- Strong typing with validation
-- Uses latest Azure REST API version (2023-07-01)
-- Follows DevFactory project standards
+- Uses AzAPI provider v2.4.0 for latest Azure features
+- Implements latest Azure Resource Manager API (2023-07-01)
+- Integrates with azurecaf naming conventions
+- Manages resource tags (global + specific)
+- Provides strong input validation
+- Supports location configuration
+- Enables flexible resource organization
 
-## Usage
+## Simple Usage
 
 ```hcl
 module "resource_group" {
   source = "./modules/resource_group"
 
   global_settings = {
-    prefixes      = ["example"]
-    random_length = 5
+    prefixes      = ["dev"]
+    random_length = 3
     passthrough   = false
     use_slug      = true
   }
 
   resource_group = {
-    name   = "example-rg"
-    region = "East US"
+    name     = "my-project"
+    location = "East US"
     tags = {
-      environment = "dev"
-      project     = "example"
+      environment = "development"
     }
-  }
-
-  tags = {
-    managed_by = "terraform"
   }
 }
 ```
 
-## Requirements
+## Advanced Usage
 
-| Name | Version |
-|------|---------|
-| terraform | >= 1.9.0 |
-| azurecaf | ~> 1.2.0 |
-| azapi | ~> 2.4.0 |
+```hcl
+module "resource_group" {
+  source = "./modules/resource_group"
 
-## Providers
+  global_settings = {
+    prefixes      = ["prod"]
+    random_length = 5
+    passthrough   = false
+    use_slug      = true
+    environment   = "production"
+    regions = {
+      region1 = "eastus"
+      region2 = "westus"
+    }
+  }
 
-| Name | Version |
-|------|---------|
-| azurecaf | ~> 1.2.0 |
-| azapi | ~> 2.4.0 |
+  resource_group = {
+    name     = "complex-project"
+    location = "East US"
+    tags = {
+      environment = "production"
+      cost_center = "engineering"
+      project     = "core-infrastructure"
+    }
+  }
 
-## Resources
+  tags = {
+    managed_by  = "terraform"
+    created_by  = "devops-team"
+    department  = "infrastructure"
+  }
+}
+```
 
-| Name | Type |
-|------|------|
-| [azapi_resource.resource_group](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) | resource |
-| [azurecaf_name.resource_group](https://registry.terraform.io/providers/aztfmod/azurecaf/latest/docs/resources/azurecaf_name) | resource |
-| [azapi_client_config.current](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) | data source |
+For more examples, see the [Resource Group examples](../../../examples/resource_group/).
 
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| global_settings | Global settings object for naming conventions | `object({...})` | n/a | yes |
-| resource_group | Configuration object for the resource group | `object({...})` | n/a | yes |
-| tags | A mapping of tags to assign to the resource | `map(string)` | `{}` | no |
-
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| id | The ID of the Resource Group |
-| name | The name of the Resource Group |
-| location | The location of the Resource Group |
-
-## API Version
-
-This module uses Azure Resource Manager API version `2023-07-01` for resource groups, which is the latest stable version as of 2025.
-
-## Example
-
-For a complete example, see the [simple case example](../../../examples/resource_group/simple_case/configuration.tfvars).
+<!-- BEGIN_TF_DOCS -->
+<!-- END_TF_DOCS -->
