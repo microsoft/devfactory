@@ -21,6 +21,18 @@ variables {
 
 mock_provider "azurerm" {}
 
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_id = "12345678-1234-1234-1234-123456789012"
+      tenant_id       = "12345678-1234-1234-1234-123456789012"
+      client_id       = "12345678-1234-1234-1234-123456789012"
+    }
+  }
+}
+
+mock_provider "azurecaf" {}
+
 run "dev_center_project_example" {
   command = plan
 
