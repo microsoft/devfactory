@@ -24,9 +24,20 @@ run_test() {
     terraform -chdir="${test_dir}" init -input=false > /dev/null
   fi
 
-  # Run the test
+  # Run the test and capture output
   echo -e "  Executing tests in ${test_dir}..."
-  if terraform -chdir="${test_dir}" test; then
+  local test_output
+  test_output=$(terraform -chdir="${test_dir}" test 2>&1)
+  local test_exit_code=$?
+
+  # Display the output
+  echo "$test_output"
+
+  # Check for the "0 passed, 0 failed" pattern which indicates no tests ran
+  if echo "$test_output" | grep -q "0 passed, 0 failed"; then
+    echo -e "  ${RED}✗ ${test_name} tests failed (no tests executed)${NC}"
+    return 1
+  elif [ $test_exit_code -eq 0 ]; then
     echo -e "  ${GREEN}✓ ${test_name} tests passed${NC}"
     return 0
   else
@@ -50,7 +61,7 @@ echo -e "----------------\n"
 failed_tests=()
 
 # Run all unit tests
-unit_test_dirs=("tests/unit/resource_group" "tests/unit/dev_center" "tests/unit/dev_center_environment_type" "tests/unit/dev_center_project")
+unit_test_dirs=("tests/unit/resource_group" "tests/unit/dev_center" "tests/unit/dev_center_environment_type" "tests/unit/dev_center_project" "tests/unit/dev_center_catalog")
 
 for dir in "${unit_test_dirs[@]}"; do
   test_name=$(basename "$dir")

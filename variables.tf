@@ -167,6 +167,60 @@ variable "dev_center_projects" {
   default = {}
 }
 
+variable "dev_center_catalogs" {
+  description = "Dev Center Catalogs configuration objects"
+  type = map(object({
+    name          = string
+    dev_center_id = optional(string)
+    dev_center = optional(object({
+      key = string
+    }))
+
+    # GitHub catalog configuration
+    github = optional(object({
+      branch            = string
+      uri               = string
+      path              = optional(string)
+      secret_identifier = optional(string)
+    }))
+
+    # Azure DevOps Git catalog configuration
+    ado_git = optional(object({
+      branch            = string
+      uri               = string
+      path              = optional(string)
+      secret_identifier = optional(string)
+    }))
+
+    # Sync type: Manual or Scheduled
+    sync_type = optional(string)
+
+    # Resource-specific tags (separate from infrastructure tags)
+    resource_tags = optional(map(string))
+
+    tags = optional(map(string), {})
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for k, v in var.dev_center_catalogs : (
+        (try(v.github, null) != null && try(v.ado_git, null) == null) ||
+        (try(v.github, null) == null && try(v.ado_git, null) != null)
+      )
+    ])
+    error_message = "Each catalog must specify exactly one of 'github' or 'ado_git', but not both."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.dev_center_catalogs :
+      try(v.sync_type, null) == null ? true : contains(["Manual", "Scheduled"], v.sync_type)
+    ])
+    error_message = "sync_type must be either 'Manual' or 'Scheduled'."
+  }
+}
+
 variable "dev_center_environment_types" {
   description = "Dev Center Environment Types configuration objects"
   type = map(object({
@@ -215,37 +269,6 @@ variable "dev_center_network_connections" {
       domain_password_secret_id = optional(string)
       domain_username           = string
       organizational_unit_path  = optional(string)
-    }))
-    tags = optional(map(string), {})
-  }))
-  default = {}
-}
-
-# tflint-ignore: terraform_unused_declarations
-variable "dev_center_catalogs" {
-  description = "Dev Center Catalogs configuration objects"
-  type = map(object({
-    name          = string
-    description   = optional(string)
-    dev_center_id = optional(string)
-    dev_center = optional(object({
-      key = string
-    }))
-    resource_group_name = optional(string)
-    resource_group = optional(object({
-      key = string
-    }))
-    catalog_github = optional(object({
-      branch            = string
-      path              = string
-      key_vault_key_url = string
-      uri               = string
-    }))
-    catalog_adogit = optional(object({
-      branch            = string
-      path              = string
-      key_vault_key_url = string
-      uri               = string
     }))
     tags = optional(map(string), {})
   }))

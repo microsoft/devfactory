@@ -63,12 +63,30 @@ variables {
     }
   }
 
+  dev_center_catalogs = {
+    integration_catalog = {
+      name = "integration-test-catalog"
+      dev_center = {
+        key = "devcenter1"
+      }
+      github = {
+        uri    = "https://github.com/microsoft/devcenter-catalog"
+        branch = "main"
+        path   = "/Environments"
+      }
+      tags = {
+        environment = "test"
+        module      = "dev_center_catalog"
+        test_type   = "integration"
+      }
+    }
+  }
+
   // Empty variables required by the root module
   dev_center_galleries                 = {}
   dev_center_dev_box_definitions       = {}
   dev_center_project_environment_types = {}
   dev_center_network_connections       = {}
-  dev_center_catalogs                  = {}
   shared_image_galleries               = {}
 }
 
@@ -112,6 +130,11 @@ run "full_infrastructure_creation" {
   assert {
     condition     = module.dev_center_environment_types["envtype1"] != null
     error_message = "Environment type should exist"
+  }
+
+  assert {
+    condition     = module.dev_center_catalogs["integration_catalog"] != null
+    error_message = "Dev center catalog should exist"
   }
 
   // Test input variable values
