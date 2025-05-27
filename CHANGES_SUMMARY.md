@@ -24,7 +24,7 @@ This document summarizes the updates made to the Azure DevCenter module to imple
   - Changed from always including SystemAssigned default to only including identity block when `var.dev_center.identity` is specified
   - Uses `dynamic "identity"` block with `for_each = try(var.dev_center.identity, null) != null ? [var.dev_center.identity] : []`
 - **Resource Naming**: Updated resource name from `azapi_resource.dev_center` to `azapi_resource.this` for consistency
-- **CAF Naming**: Updated azurecaf_name resource from `dev_center` to `this` for consistency
+- **CAF Naming**: Updated `azurecaf_name` resource references in the code from `azurecaf_name.dev_center` to `azurecaf_name.this` for consistency
 
 ### 2. `/modules/dev_center/variables.tf`
 - **New Variables**: Added support for all 2025-04-01-preview properties
