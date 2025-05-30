@@ -83,13 +83,18 @@ The project includes comprehensive documentation to help you understand and use 
 DevFactory is designed with a modular approach. The root module (main.tf) is the entry point that orchestrates the creation of all resources, and you provide different variable files to control what gets deployed:
 
 ```bash
+# Login to Azure
+az login
+
 # Initialize Terraform
 terraform init
 
 # Deploy a simple resource group configuration
+terraform plan -var-file=examples/resource_group/simple_case/configuration.tfvars
 terraform apply -var-file=examples/resource_group/simple_case/configuration.tfvars
 
 # Deploy a dev center with devboxes
+terraform plan -var-file=examples/dev_center/simple_case/configuration.tfvars
 terraform apply -var-file=examples/dev_center/simple_case/configuration.tfvars
 ```
 
