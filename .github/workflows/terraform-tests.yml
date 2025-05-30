@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.1
@@ -36,6 +38,8 @@ jobs:
       integration_tests: ${{ steps.find-integration-tests.outputs.tests }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Find unit tests
         id: find-unit-tests
         run: |
@@ -56,6 +60,8 @@ jobs:
         test: ${{fromJson(needs.discover-tests.outputs.unit_tests)}}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.1
@@ -77,6 +83,8 @@ jobs:
         test: ${{fromJson(needs.discover-tests.outputs.integration_tests)}}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.1
@@ -95,6 +103,8 @@ jobs:
     if: always()
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.12.1
