@@ -28,8 +28,6 @@ variables {
   shared_image_galleries               = {}
 }
 
-mock_provider "azurerm" {}
-
 mock_provider "azapi" {
   mock_data "azapi_client_config" {
     defaults = {

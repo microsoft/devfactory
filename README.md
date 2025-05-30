@@ -72,9 +72,9 @@ The project includes comprehensive documentation to help you understand and use 
 
 ## Requirements
 
-- Terraform ≥ 1.9.0
-- AzureRM Provider ~> 4.26.0
+- Terraform ≥ 1.12.1
 - AzureCAF Provider ~> 1.2.0
+- AzureAPI Provider ~> 2.0.0
 - Azure CLI (latest version recommended)
 - An active Azure subscription
 
