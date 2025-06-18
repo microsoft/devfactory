@@ -1,6 +1,5 @@
 {
-    // TODO: The .devcontainer can't run these MCP servers at the moment. Open this workspace locally for now.
-    "servers": {
+        "servers": {
         "Terraform MCP Server": {
             "command": "docker",
             "args": [
