@@ -60,7 +60,16 @@ To get started with the DevFactory project:
 5. Initialize Terraform: `terraform init`
 6. Plan your deployment: `terraform plan -var-file=configuration.tfvars`
 7. Apply the configuration: `terraform apply -var-file=configuration.tfvars`
+
 For detailed instructions, see our [Getting Started Guide](docs/getting_started.md).
+
+### Development Environment
+
+This project includes:
+- **GitHub Codespaces Support**: Pre-configured dev container with all necessary tools
+- **MCP Integration**: Model Context Protocol servers for Terraform and Azure for AI-assisted development
+
+> **Note for Codespaces Users**: To use MCP features in GitHub Codespaces, switch to VS Code Insider version. See the [Getting Started Guide](docs/getting_started.md) for detailed instructions.
 
 ## Documentation
 

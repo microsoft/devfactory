@@ -9,6 +9,55 @@ This guide helps you get started with deploying a development environment using 
 - Azure subscription with appropriate permissions
 - Git client
 
+## Development Environment Setup
+
+### Using GitHub Codespaces
+
+This repository includes a configured dev container that works seamlessly with GitHub Codespaces. To get started:
+
+1. Navigate to the repository on GitHub
+2. Click the green "Code" button
+3. Select "Codespaces" tab
+4. Click "Create codespace on main"
+
+The dev container includes all necessary tools pre-installed:
+- Terraform CLI with TFLint and Terragrunt
+- Azure CLI with Azure development extensions
+- Docker CLI for container management
+- GitHub CLI (`gh`) for GitHub operations
+- Node.js, npm, and ESLint for JavaScript development
+
+### Model Context Protocol (MCP) Support
+
+This project includes MCP (Model Context Protocol) server integrations for enhanced AI-assisted development:
+
+- **Terraform MCP Server**: Provides seamless integration with Terraform Registry APIs for Infrastructure as Code development
+- **Azure MCP Server**: Enables AI agents to interact with Azure services like Dev Center, Dev Box, Storage, Cosmos DB, and more
+
+#### Important: Using MCP in Codespaces
+
+> **Note:** If you want to use MCP features in GitHub Codespaces, you need to switch to the VS Code Insider version. The stable version of VS Code does not currently support MCP in Codespaces environments.
+
+To enable MCP in Codespaces:
+
+1. When creating a new Codespace, click on the gear icon next to "Create codespace"
+2. Select "Configure and create codespace"
+3. Under "Editor preference", choose "VS Code Insider (Web)"
+4. Create the codespace
+
+Alternatively, if you already have a Codespace running:
+
+1. Open your existing Codespace
+2. Go to Settings (gear icon in bottom left)
+3. Select "Switch to Insider" if available
+4. Restart the Codespace
+
+The MCP servers provide advanced capabilities for:
+- Automated Terraform resource discovery and documentation
+- Azure resource management and querying
+- Infrastructure planning and deployment assistance
+- Real-time Azure service integration
+
 ## Setup Instructions
 
 ### 1. Clone the Repository
