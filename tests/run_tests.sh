@@ -21,7 +21,11 @@ run_test() {
   # Initialize the test directory if needed
   if [ ! -d "${test_dir}/.terraform" ]; then
     echo -e "  Initializing ${test_dir}..."
-    terraform -chdir="${test_dir}" init -input=false > /dev/null
+    if ! terraform -chdir="${test_dir}" init -input=false > /dev/null 2>&1; then
+      echo -e "  ${RED}✗ Failed to initialize ${test_dir}${NC}"
+      echo -e "  ${RED}✗ ${test_name} tests failed (initialization failed)${NC}"
+      return 1
+    fi
   fi
 
   # Run the test and capture output
@@ -54,14 +58,69 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 # Change to the root directory
 cd "$ROOT_DIR"
 
+# Initialize the root configuration first (required for tests that reference root modules)
+echo -e "${YELLOW}Initializing root configuration...${NC}"
+if [ ! -d ".terraform" ] || [ ! -f ".terraform/modules/modules.json" ]; then
+  echo -e "  Initializing root directory..."
+  if ! terraform init -input=false > /dev/null 2>&1; then
+    echo -e "  ${RED}✗ Failed to initialize root configuration${NC}"
+    echo -e "  This may cause some tests to fail"
+  else
+    echo -e "  ${GREEN}✓ Root configuration initialized${NC}"
+  fi
+else
+  echo -e "  ${GREEN}✓ Root configuration already initialized${NC}"
+fi
+echo ""
+
 echo -e "${BOLD}Running Unit Tests${NC}"
 echo -e "----------------\n"
 
 # Create an array to store failed tests
 failed_tests=()
 
-# Run all unit tests
-unit_test_dirs=("tests/unit/resource_group" "tests/unit/dev_center" "tests/unit/dev_center_dev_box_definition" "tests/unit/dev_center_environment_type" "tests/unit/dev_center_project" "tests/unit/dev_center_catalog")
+# Dynamically discover unit test directories
+echo -e "${YELLOW}Discovering test directories...${NC}"
+unit_test_dirs=()
+if [ -d "tests/unit" ]; then
+  while IFS= read -r -d '' dir; do
+    if [ -d "$dir" ] && [ -n "$(find "$dir" -name "*.tftest.hcl" -o -name "*.tf" 2>/dev/null)" ]; then
+      unit_test_dirs+=("$dir")
+    fi
+  done < <(find tests/unit -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+fi
+
+echo -e "Found ${#unit_test_dirs[@]} unit test directories"
+for dir in "${unit_test_dirs[@]}"; do
+  echo -e "  - $(basename "$dir")"
+done
+echo ""
+
+# Initialize all test directories first
+echo -e "${YELLOW}Initializing all test directories...${NC}"
+for dir in "${unit_test_dirs[@]}"; do
+  if [ ! -d "${dir}/.terraform" ]; then
+    echo -e "  Initializing $(basename "$dir")..."
+    if ! terraform -chdir="${dir}" init -input=false > /dev/null 2>&1; then
+      echo -e "  ${RED}✗ Failed to initialize ${dir}${NC}"
+    else
+      echo -e "  ${GREEN}✓ Initialized ${dir}${NC}"
+    fi
+  else
+    # Check if modules.json exists and is recent
+    if [ ! -f "${dir}/.terraform/modules/modules.json" ] || [ "${dir}/.terraform/modules/modules.json" -ot "../../../.terraform/modules/modules.json" ] 2>/dev/null; then
+      echo -e "  Re-initializing $(basename "$dir") (modules may be outdated)..."
+      if ! terraform -chdir="${dir}" init -input=false > /dev/null 2>&1; then
+        echo -e "  ${RED}✗ Failed to re-initialize ${dir}${NC}"
+      else
+        echo -e "  ${GREEN}✓ Re-initialized ${dir}${NC}"
+      fi
+    else
+      echo -e "  ${GREEN}✓ $(basename "$dir") already initialized${NC}"
+    fi
+  fi
+done
+echo ""
 
 for dir in "${unit_test_dirs[@]}"; do
   test_name=$(basename "$dir")
@@ -74,8 +133,26 @@ done
 echo -e "${BOLD}Running Integration Tests${NC}"
 echo -e "---------------------\n"
 
-# Run integration tests
-integration_test_dirs=("tests/integration")
+# Dynamically discover integration test directories
+integration_test_dirs=()
+if [ -d "tests/integration" ]; then
+  while IFS= read -r -d '' dir; do
+    if [ -d "$dir" ] && [ -n "$(find "$dir" -name "*.tftest.hcl" -o -name "*.tf" 2>/dev/null)" ]; then
+      integration_test_dirs+=("$dir")
+    fi
+  done < <(find tests/integration -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+
+  # If no subdirectories with tests found, check if integration directory itself has tests
+  if [ ${#integration_test_dirs[@]} -eq 0 ] && [ -n "$(find tests/integration -maxdepth 1 -name "*.tftest.hcl" -o -name "*.tf" 2>/dev/null)" ]; then
+    integration_test_dirs+=("tests/integration")
+  fi
+fi
+
+echo -e "Found ${#integration_test_dirs[@]} integration test directories"
+for dir in "${integration_test_dirs[@]}"; do
+  echo -e "  - $(basename "$dir")"
+done
+echo ""
 
 for dir in "${integration_test_dirs[@]}"; do
   test_name=$(basename "$dir")

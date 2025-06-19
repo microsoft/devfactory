@@ -6,6 +6,7 @@ variable "global_settings" {
     passthrough   = optional(bool)
     use_slug      = optional(bool)
     tags          = optional(map(string))
+    regions       = optional(map(string))
   })
 }
 
@@ -254,24 +255,6 @@ variable "dev_center_environment_types" {
 }
 
 # tflint-ignore: terraform_unused_declarations
-variable "dev_center_project_environment_types" {
-  description = "Dev Center Project Environment Types configuration objects"
-  type = map(object({
-    name       = string
-    project_id = optional(string)
-    project = optional(object({
-      key = string
-    }))
-    environment_type_id = optional(string)
-    environment_type = optional(object({
-      key = string
-    }))
-    tags = optional(map(string), {})
-  }))
-  default = {}
-}
-
-# tflint-ignore: terraform_unused_declarations
 variable "dev_center_network_connections" {
   description = "Dev Center Network Connections configuration objects"
   type = map(object({
@@ -308,6 +291,60 @@ variable "shared_image_galleries" {
       permission = string
     }))
     tags = optional(map(string), {})
+  }))
+  default = {}
+}
+
+variable "dev_center_project_pools" {
+  description = "DevCenter Project Pools configuration objects"
+  type = map(object({
+    name                    = string
+    display_name            = optional(string)
+    dev_box_definition_name = string
+    dev_center_project_id   = optional(string)
+    dev_center_project = optional(object({
+      key = string
+    }))
+    resource_group_id = optional(string)
+    resource_group = optional(object({
+      key = string
+    }))
+    region                                  = optional(string)
+    local_administrator_enabled             = optional(bool, false)
+    network_connection_name                 = optional(string, "default")
+    stop_on_disconnect_grace_period_minutes = optional(number, 60)
+    license_type                            = optional(string, "Windows_Client")
+    virtual_network_type                    = optional(string, "Managed")
+    single_sign_on_status                   = optional(string, "Disabled")
+    tags                                    = optional(map(string), {})
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for pool_key, pool in var.dev_center_project_pools :
+      pool.stop_on_disconnect_grace_period_minutes >= 60 && pool.stop_on_disconnect_grace_period_minutes <= 480
+    ])
+    error_message = "Stop on disconnect grace period must be between 60 and 480 minutes for all pools."
+  }
+}
+
+variable "dev_center_project_pool_schedules" {
+  description = "DevCenter Project Pool Schedules configuration objects"
+  type = map(object({
+    dev_center_project_pool_id = optional(string)
+    dev_center_project_pool = optional(object({
+      key = string
+    }))
+    schedule = object({
+      name      = string
+      type      = optional(string, "StopDevBox")
+      frequency = optional(string, "Daily")
+      time      = string
+      time_zone = string
+      state     = optional(string, "Enabled")
+      tags      = optional(map(string), {})
+    })
   }))
   default = {}
 }

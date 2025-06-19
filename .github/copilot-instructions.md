@@ -1,3 +1,11 @@
+## When writing or updating Terraform code
+Use the instructions [here](./github/instructions/devbox-tf.instructions.md) for writing/updating Terraform code.
+
+## When updating code
+Document the changes made in the [CHANGELOG.md](CHANGELOG.md) file, including:
+- A brief description of the change.
+- If it is a bug fix, feature, or improvement.
+- Include assessment if this is a breaking change or not.
 ## MCP Server Instructions
 If the respective MCP server exists, follow these instructions:
 - Terraform MCP Server: provides seamless integration with Terraform Registry APIs, enabling advanced automation and interaction capabilities for Infrastructure as Code (IaC) development.

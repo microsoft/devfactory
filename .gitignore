@@ -6,6 +6,9 @@
 # Environment Variables
 .env
 
+# User generated configuration files (the configuration directory)
+/configurations
+
 # User-specific files
 *.rsuser
 *.suo
