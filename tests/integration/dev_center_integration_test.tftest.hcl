@@ -83,11 +83,29 @@ variables {
   }
 
   // Empty variables required by the root module
-  dev_center_galleries                 = {}
-  dev_center_dev_box_definitions       = {}
-  dev_center_project_environment_types = {}
-  dev_center_network_connections       = {}
-  shared_image_galleries               = {}
+  dev_center_galleries           = {}
+  dev_center_dev_box_definitions = {}
+  dev_center_project_environment_types = {
+    proj_env_test = {
+      name = "test-environment-type"
+      project = {
+        key = "project1"
+      }
+      environment_type = {
+        key = "envtype1"
+      }
+      status = "Enabled"
+      tags = {
+        environment = "test"
+        module      = "dev_center_project_environment_type"
+        test_type   = "integration"
+      }
+    }
+  }
+  dev_center_network_connections    = {}
+  dev_center_project_pools          = {}
+  dev_center_project_pool_schedules = {}
+  shared_image_galleries            = {}
 }
 
 mock_provider "azapi" {
@@ -133,6 +151,11 @@ run "full_infrastructure_creation" {
   assert {
     condition     = module.dev_center_catalogs["integration_catalog"] != null
     error_message = "Dev center catalog should exist"
+  }
+
+  assert {
+    condition     = module.dev_center_project_environment_types["proj_env_test"] != null
+    error_message = "Project environment type should exist"
   }
 
   // Test input variable values

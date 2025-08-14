@@ -121,7 +121,9 @@
                 "examples/dev_center/dual_identity/configuration.tfvars",
                 "examples/dev_center_project/configuration.tfvars",
                 "examples/dev_center_environment_type/simple_case/configuration.tfvars",
-                "examples/dev_center_environment_type/enhanced_case/configuration.tfvars"
+                "examples/dev_center_environment_type/enhanced_case/configuration.tfvars",
+                "examples/dev_center_project_environment_type/simple_case/configuration.tfvars",
+                "examples/dev_center_project_environment_type/enhanced_case/configuration.tfvars"
             ],
             "default": "examples/dev_center/simple_case/configuration.tfvars"
         }

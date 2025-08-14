@@ -4,7 +4,91 @@
 
 This document summarizes the updates made to the Azure DevCenter module to implement the 2025-04-01-preview API version and fix the identity block placement.
 
-## Latest Changes (July 28, 2025)
+## Latest Changes (August 14, 2025)
+
+### Dev Center Project Environment Type Module - API Schema Compliance Fix
+
+- **Fixed**: Resolved Azure API schema validation errors in dev_center_project_environment_type module for userRoleAssignments
+- **Classification**: Bug fix
+- **Breaking Change**: YES - User role assignments schema changed to match Azure API requirements
+- **Issue**: userRoleAssignments.roles was defined as list(string) but Azure API expects map(object({}))
+- **Root Cause**: Mismatch between Terraform variable schema and Azure DevCenter REST API schema
+- **Azure API Requirement**:
+  - userRoleAssignments keys must be user object IDs (GUIDs), not email addresses
+  - roles property must be a map where keys are role definition IDs (GUIDs) and values are objects
+- **Solution Applied**:
+  - Updated module variable schema: `roles = list(string)` → `roles = map(object({}))`
+  - Updated root variable schema in `variables.tf` to match module requirements
+  - Updated all example configurations to use correct API format
+  - Updated test files to use proper schema structure
+  - Enhanced README documentation with Azure CLI commands to find required IDs
+- **Files Modified**:
+  - `modules/dev_center_project_environment_type/variables.tf`: Fixed roles type definition
+  - `modules/dev_center_project_environment_type/README.md`: Added comprehensive documentation for finding user object IDs and role definition IDs
+  - `variables.tf`: Updated root variable definition to match module schema
+  - `tests/unit/dev_center_project_environment_type/project_environment_type_test.tftest.hcl`: Updated test to use correct schema
+  - `examples/dev_center_project_environment_type/enhanced_case/configuration.tfvars`: Updated all user role assignments to use object IDs and role definition IDs
+- **Migration Required**:
+  - Users must update configurations to use Azure AD user object IDs instead of email addresses
+  - Users must use role definition IDs (GUIDs) instead of role names
+  - Use `az ad user show --id user@domain.com --query id -o tsv` to get user object IDs
+  - Use `az role definition list --name "Role Name" --query '[].id' -o tsv` to get role definition IDs
+- **Validation**: All unit and integration tests pass (43 total test cases)
+- **API Reference**: Based on Azure DevCenter REST API documentation (2025-04-01-preview)
+
+### Dev Center Project Environment Type Module - Critical Fix Applied
+
+- **Fixed**: Resolved API validation errors in dev_center_project_environment_type module
+- **Classification**: Bug fix
+- **Breaking Change**: NO - Module interface updated but functionality preserved
+- **Issue**: DeploymentTargetId was incorrectly using full environment type resource ID instead of subscription ID
+- **Root Cause**: Azure DevCenter API requires deploymentTargetId to be subscription ID format `/subscriptions/{guid}`, not full resource ID
+- **Solution Applied**:
+  - Updated `deploymentTargetId` to use subscription ID: `/subscriptions/${data.azapi_client_config.current.subscription_id}`
+  - Fixed environment type name matching to use actual created environment type names
+  - Removed unnecessary azurecaf_name resource for project environment types
+  - Updated module to reference environment type names from parent Dev Center
+- **Files Modified**:
+  - `modules/dev_center_project_environment_type/module.tf`: Fixed deploymentTargetId and name logic
+  - `modules/dev_center_project_environment_type/variables.tf`: Added environment_type_name variable, updated validation
+  - `modules/dev_center_project_environment_type/output.tf`: Updated deployment_target_id output description
+  - `modules/dev_center_project_environment_type/README.md`: Updated usage examples and documentation
+  - `dev_center_project_environment_types.tf`: Updated module call to pass environment_type_name
+- **Validation**: Successfully applied simple case configuration with both development and staging project environment types
+- **API Reference**: Based on official Azure DevCenter REST API documentation (2025-04-01-preview)
+- **Resources Created**:
+  - `/subscriptions/.../projects/.../environmentTypes/demo-dcet-development-qgi` (Enabled)
+  - `/subscriptions/.../projects/.../environmentTypes/demo-dcet-staging-iuo` (Enabled)
+
+### Dev Center Project Environment Type Module - New Implementation
+
+- **Added**: New `dev_center_project_environment_type` module for associating environment types with Dev Center projects
+- **Classification**: Feature
+- **Breaking Change**: NO - This is a new module that doesn't affect existing functionality
+- **Files Added**:
+  - `modules/dev_center_project_environment_type/module.tf`: Main module implementation using azapi provider
+  - `modules/dev_center_project_environment_type/variables.tf`: Strong typing with comprehensive validation
+  - `modules/dev_center_project_environment_type/output.tf`: Output definitions for project environment type properties
+  - `modules/dev_center_project_environment_type/README.md`: Complete documentation with usage examples
+  - `dev_center_project_environment_types.tf`: Root orchestration file
+  - `variables.tf`: Added new variable definition with validation rules
+  - `examples/dev_center_project_environment_type/simple_case/configuration.tfvars`: Basic example
+  - `examples/dev_center_project_environment_type/enhanced_case/configuration.tfvars`: Advanced example with user role assignments
+  - `tests/unit/dev_center_project_environment_type/project_environment_type_test.tftest.hcl`: Unit tests with provider mocking
+- **Files Modified**:
+  - `tests/integration/dev_center_integration_test.tftest.hcl`: Added project environment type integration test
+  - `.vscode/tasks.json`: Added new example options for VS Code development workflow
+  - `docs/file_structure.md`: Updated with new module and example locations
+  - `docs/module_guide.md`: Enhanced with comprehensive usage patterns and configuration options
+- **Features**:
+  - Associates environment types with Dev Center projects using Azure DevCenter 2025-04-01-preview API
+  - Configurable status (Enabled/Disabled) for project environment types
+  - User role assignments for granular access control
+  - Comprehensive validation for all input variables
+  - Full test coverage with both unit and integration tests
+  - Complete documentation and examples
+
+## Previous Changes (July 28, 2025)
 
 ### Dev Center Network Connection Module - AzAPI Migration
 - **Updated**: Migrated `dev_center_network_connection` module from azurerm to azapi provider

@@ -14,7 +14,7 @@ global_settings = {
 
 resource_groups = {
   rg_devbox = {
-    name   = "rg-devbox-definitions"
+    name   = "devbox-definitions"
     region = "eastus"
     tags = {
       purpose = "devbox-definitions"

@@ -78,6 +78,7 @@ The project includes comprehensive documentation to help you understand and use 
 - [Getting Started Guide](docs/getting_started.md) - Instructions for setting up and deploying your first resources
 - [Coding Conventions](docs/conventions.md) - Standards and best practices for the codebase
 - [Module Guide](docs/module_guide.md) - Detailed information about each module's functionality and usage
+- [GitHub Coding Agent Guide](docs/coding_agent.md) - Instructions for using the GitHub Coding Agent
 
 ## Requirements
 

@@ -231,11 +231,10 @@ module "dev_center_project_environment_types" {
   source   = "./modules/dev_center_project_environment_type"
   for_each = var.dev_center_project_environment_types
 
-  global_settings          = var.global_settings
-  project_environment_type = each.value
-  location                 = lookup(each.value, "location", null) != null ? each.value.location : module.resource_groups[each.value.resource_group.key].location
-  dev_center_project_id    = lookup(each.value, "dev_center_project_id", null) != null ? each.value.dev_center_project_id : module.dev_center_projects[each.value.project.key].id
-  deployment_target_id     = each.value.deployment_target_id
+  global_settings           = var.global_settings
+  project_environment_type  = each.value
+  dev_center_project_id     = lookup(each.value, "dev_center_project_id", null) != null ? each.value.dev_center_project_id : module.dev_center_projects[each.value.project.key].id
+  deployment_target_id      = lookup(each.value, "deployment_target_id", null) != null ? each.value.deployment_target_id : module.dev_center_environment_types[each.value.environment_type.key].id
 }
 ```
 
@@ -244,7 +243,6 @@ module "dev_center_project_environment_types" {
 |----------|------|----------|-------------|
 | `global_settings` | `object` | Yes | Global settings for naming and prefixing |
 | `project_environment_type` | `object` | Yes | Project environment type configuration object |
-| `location` | `string` | Yes | Azure region for deployment |
 | `dev_center_project_id` | `string` | Yes | The ID of the project |
 | `deployment_target_id` | `string` | Yes | The ID of the deployment target |
 
@@ -252,12 +250,18 @@ module "dev_center_project_environment_types" {
 ```hcl
 dev_center_project_environment_types = {
   projenvtype1 = {
-    name = "terraform-env"
+    name = "development"
     project = {
       key = "project1"
     }
     environment_type = {
       key = "envtype1"
+    }
+    status = "Enabled"
+    user_role_assignments = {
+      "developers@contoso.com" = {
+        roles = ["Deployment Environments User"]
+      }
     }
     tags = {
       environment = "demo"
@@ -265,6 +269,14 @@ dev_center_project_environment_types = {
   }
 }
 ```
+
+### Features
+- Associates environment types with Dev Center projects
+- Configurable status (Enabled/Disabled) 
+- User role assignments for access control
+- Comprehensive input validation
+- Support for resource tags
+- Compatible with Azure DevCenter 2025-04-01-preview API
 
 ## Dev Center Network Connection Module
 
