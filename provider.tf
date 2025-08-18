@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azapi = {
       source  = "Azure/azapi"
-      version = "~> 2.4.0"
+      version = "~> 2.6.0"
     }
     azurecaf = {
       source  = "aztfmod/azurecaf"
