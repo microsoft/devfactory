@@ -14,7 +14,7 @@ global_settings = {
 
 resource_groups = {
   rg_devcenter_prod = {
-    name   = "rg-devcenter-prod"
+    name   = "devcenter-prod"
     region = "eastus"
     tags = {
       purpose = "production"

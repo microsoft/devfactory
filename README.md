@@ -78,6 +78,8 @@ The project includes comprehensive documentation to help you understand and use 
 - [Getting Started Guide](docs/getting_started.md) - Instructions for setting up and deploying your first resources
 - [Coding Conventions](docs/conventions.md) - Standards and best practices for the codebase
 - [Module Guide](docs/module_guide.md) - Detailed information about each module's functionality and usage
+- [Vibe Coding Guide](/docs/vibe_coding.md) - This codebase supports vibe coding! Read this document on how.
+- [GitHub Coding Agent Guide](docs/coding_agent.md) - Instructions for using the GitHub Coding Agent
 
 ## Requirements
 
