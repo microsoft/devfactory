@@ -360,3 +360,52 @@ variable "dev_center_project_pool_schedules" {
   }))
   default = {}
 }
+
+variable "dev_center_project_environment_types" {
+  description = "Dev Center Project Environment Types configuration objects"
+  type = map(object({
+    name = string
+    project = object({
+      key = string
+    })
+    environment_type = object({
+      key = string
+    })
+    dev_center_project_id = optional(string)
+    deployment_target_id  = optional(string)
+    status                = optional(string, "Enabled")
+    user_role_assignments = optional(map(object({
+      roles = map(object({}))
+    })))
+    tags = optional(map(string), {})
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for k, v in var.dev_center_project_environment_types : (
+        (v.dev_center_project_id != null && v.project == null) ||
+        (v.dev_center_project_id == null && v.project != null)
+      )
+    ])
+    error_message = "Either 'dev_center_project_id' or 'project.key' must be specified, but not both."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.dev_center_project_environment_types : (
+        (v.deployment_target_id != null && v.environment_type == null) ||
+        (v.deployment_target_id == null && v.environment_type != null)
+      )
+    ])
+    error_message = "Either 'deployment_target_id' or 'environment_type.key' must be specified, but not both."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.dev_center_project_environment_types :
+      contains(["Enabled", "Disabled"], v.status)
+    ])
+    error_message = "Status must be either 'Enabled' or 'Disabled'."
+  }
+}

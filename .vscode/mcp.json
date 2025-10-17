@@ -1,5 +1,5 @@
 {
-        "servers": {
+    "servers": {
         "Terraform MCP Server": {
             "command": "docker",
             "args": [
