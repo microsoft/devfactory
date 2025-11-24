@@ -18,7 +18,7 @@ jobs:
     name: Format and Validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
@@ -37,7 +37,7 @@ jobs:
       unit_tests: ${{ steps.find-unit-tests.outputs.tests }}
       integration_tests: ${{ steps.find-integration-tests.outputs.tests }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Find unit tests
@@ -59,7 +59,7 @@ jobs:
       matrix:
         test: ${{fromJson(needs.discover-tests.outputs.unit_tests)}}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
@@ -82,7 +82,7 @@ jobs:
       matrix:
         test: ${{fromJson(needs.discover-tests.outputs.integration_tests)}}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: hashicorp/setup-terraform@v3
